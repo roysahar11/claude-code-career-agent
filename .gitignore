@@ -1,0 +1,38 @@
+# Personal files (create from .example templates via /setup)
+profile/context.md
+profile/experience.md
+profile/preferences.md
+profile/coaching-notes.md
+profile/evaluation-criteria.md
+config/user.md
+config/search.md
+
+# Application data
+Applications/
+Resumes/base-*.json
+state/
+logs/
+Reports/
+
+# Environment & secrets
+.env
+.env.*
+
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+._*
+
+# Generated
+*.html
+!.claude/skills/customize-resume/templates/*.html
+*.tmp
+*.log
+
+# Claude Code local
+.claude/settings.local.json
+.claude/memory/
+.claude/plans/
+.claude/ideas/
