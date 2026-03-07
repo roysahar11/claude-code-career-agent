@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "Task",
+      "Write(Applications/**)",
+      "Write(Tracking/**)",
+      "Write(logs/**)",
+      "Edit(Applications/**)",
+      "Edit(Tracking/**)",
+      "Bash(node *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(open *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push*)",
+      "mcp__claude-in-chrome__*"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Edit(.claude/**)",
+      "Edit(profile/**)",
+      "Edit(config/**)",
+      "Edit(CLAUDE.md)",
+      "Edit(Resumes/**)",
+      "Write(.claude/**)",
+      "Write(profile/**)",
+      "Write(config/**)",
+      "Write(CLAUDE.md)",
+      "Write(Resumes/**)"
+    ]
+  }
+}
