@@ -1,58 +1,52 @@
-# Compliance & Terms of Service Notes
+# Compliance & Terms of Service
 
-This project automates personal job search activities. All automated access respects platform terms of service where possible.
+## Disclaimer
 
-## Usage Scope
+This project is published for **educational and personal use purposes**. It demonstrates how AI agents can automate job search workflows, including interaction with job platforms and career websites.
 
-This project is for **personal, non-commercial job search use only**. It is not intended for distribution, resale, or use by third parties.
+For sources that provide public APIs or explicitly permit programmatic access, this repository includes **traditional scrapers** (HTTP requests, RSS parsing, etc.). For sources that restrict automated access in their Terms of Service, the repository instead contains **natural language instructions** (skills and agent definitions) that direct Claude Code to use browser automation (via the Claude in Chrome extension) to navigate pages and read content — much like a human browsing manually.
 
-## Source Classification
+Some of the platforms accessed via browser automation may restrict or prohibit automated access in their Terms of Service. These instructions are provided as-is for learning and reference. **By using this project, you accept full responsibility for ensuring your use complies with all applicable laws, regulations, and platform Terms of Service in your jurisdiction.**
 
-### Fully Compliant (Public API / RSS)
+The authors and contributors of this project are not responsible for any misuse or any consequences arising from the use of this software. See the [LICENSE](LICENSE) file for full warranty and liability disclaimers.
 
-These sources provide explicit public access mechanisms:
+## Source Categories
 
-| Source | Method | Notes |
-|--------|--------|-------|
-| **Arbeitnow** | Public JSON API (`/api/job-board-api`) | Designed for programmatic access |
-| **SimplifyJobs** | Public GitHub repository (raw JSON) | Community-maintained open data |
-| **Secret Tel Aviv** | RSS feed (wpjobboard/xml/rss) | Standard RSS, permissive robots.txt |
+When integrating job sources into your search pipeline, each source falls into one of three categories:
 
-No ToS issues. Rate-limited to respectful intervals.
+### 1. Public APIs & Open Data
 
-### Chrome Browser Automation (ToS Risk — Personal Use Only)
+Sources that offer explicit programmatic access — public REST APIs, RSS feeds, open GitHub datasets. These are designed for automated consumption and are generally safe to use.
 
-These sources prohibit automated scraping in their ToS but are accessed via Chrome browser automation (simulating normal browsing). This is the same approach used for LinkedIn.
+**Best practice:** Respect rate limits and any usage guidelines provided by the source.
 
-| Source | ToS Concern | Risk Level |
-|--------|-------------|------------|
-| **LinkedIn** | ToS prohibits scraping; hiQ v. LinkedIn precedent limits enforcement | Low — personal use, low volume |
-| **AllJobs** | ToS restricts reproduction | Low — browsing, not bulk extraction |
-| **Built In** | ToS prohibits bots/scrapers/crawlers | Low — Chrome automation, not headless |
-| **Wellfound** | ToS prohibits automated access | Low — Chrome automation, personal use |
+### 2. Browser Automation
 
-**If repurposing this code**: Remove Chrome-automated sources or replace with ToS-compliant alternatives before any commercial use, open-source distribution, or sharing with others.
+Sources that don't offer a public API but can be accessed through browser automation. This project uses Claude Code with the Claude in Chrome extension to browse these platforms — the agent follows natural language instructions to navigate pages and read content, rather than running traditional scraping scripts.
 
-### Manual-Check Sources (No Automation)
+**This repository includes instructions that fall into this category.** They are published for educational purposes to demonstrate AI-driven browser automation in the context of job searching. Whether and how you use them is your responsibility.
 
-| Source | How to Use |
-|--------|-----------|
-| **Drushim** | Use built-in "Smart Agent" (email alerts) |
-| **Goozali** | Browse manually |
-| **AllJobs alerts** | Register for email alerts |
+**Best practice:** Browse at human-like speeds, avoid bulk extraction, and review each platform's ToS before use.
 
-## Rate Limiting & Respectful Access
+### 3. Manual-Only Sources
 
-- API scrapers: 1 request per second minimum delay (Arbeitnow pagination)
-- RSS feeds: Fetched at most 3x/day (automated schedule)
-- Chrome automation: Normal browsing speed with human-like delays
-- GitHub raw files: Single HTTP request per run
+Some platforms are best accessed manually or through their own built-in alert systems (email notifications, saved searches). When a platform offers no API and explicitly prohibits automation, consider using their native tools instead.
 
-## Future Scrapers
+## Respectful Access Principles
 
-Before implementing any new automated scraper, verify:
-1. Does the source offer a public API or RSS feed?
-2. Does the ToS explicitly allow or prohibit automated access?
-3. Does robots.txt permit the routes being accessed?
+Regardless of the method, follow these principles:
 
-Only automate sources in the "Fully Compliant" category. All others should use Chrome browser automation (manual mode only) or manual checking.
+- **Rate limit** all automated requests — don't hammer servers
+- **Minimize volume** — fetch only what you need for your personal search
+- **Respect robots.txt** where applicable
+- **Stop if asked** — if a platform blocks or rate-limits you, don't circumvent it
+
+## Adding New Sources
+
+Before automating a new job source, check:
+
+1. Does it offer a public API or RSS feed? → Use that first
+2. What does its Terms of Service say about automated access?
+3. What does its robots.txt permit?
+
+Prefer public APIs and open data. Use browser automation only when necessary and with awareness of the associated ToS considerations.

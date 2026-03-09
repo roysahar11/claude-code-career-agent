@@ -46,6 +46,7 @@ The system is built as a set of **skills** (workflow instructions) and **agents*
 
 | Skill | Description |
 |-------|-------------|
+| `/setup` | Guided onboarding — builds your profile, resumes, and search config through conversation |
 | `/daily-job-fetch` | Orchestrates the full pipeline: fetch → merge → scan → report → quick-apply |
 | `/customize-resume` | Creates tailored resumes from a base template for specific job postings |
 | `/quick-apply` | Autonomous batch application drafting with WhatsApp notifications |
@@ -68,58 +69,79 @@ The system is built as a set of **skills** (workflow instructions) and **agents*
 |--------|---------|
 | `scripts/merge-pipeline.js` | Merges jobs from all sources, normalizes, deduplicates |
 | `scripts/create-quick-apply-batches.js` | Splits relevant jobs into batches for parallel processing |
-| `scripts/scrapers/fetch-all.js` | Runs web scrapers (Arbeitnow, SimplifyJobs, Secret Tel Aviv) |
+| `scripts/scrapers/fetch-all.js` | Runs web scrapers (see table below) |
+
+### Web Scrapers
+
+Built-in scrapers that run via `fetch-all.js`. Each can be individually enabled/disabled in `config/search.md`.
+
+| Scraper | Scope | Source | Coverage |
+|---------|-------|--------|----------|
+| `secret-tel-aviv` | Israeli | [Secret Tel Aviv Jobs](https://jobs.secrettelaviv.com/) | Israeli tech jobs via RSS feed. English-language listings from the Tel Aviv startup ecosystem. |
+| `arbeitnow` | International | [Arbeitnow API](https://www.arbeitnow.com/) | European jobs with a DACH (Germany/Austria/Switzerland) focus. Includes remote-friendly positions. |
+| `simplify-jobs` | International | [SimplifyJobs GitHub](https://github.com/SimplifyJobs/New-Grad-Positions) | US new-grad and entry-level tech positions, crowdsourced and updated frequently. Filterable by category. |
 
 ## Prerequisites
 
 - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** — the AI coding assistant that runs the skills and agents
-- **[Claude in Chrome](https://chromewebstore.google.com/detail/claude-in-chrome/)** — browser extension for LinkedIn scraping and Chrome-based job boards
 - **Node.js** (v18+) — for scripts and resume rendering
 - **[Puppeteer](https://pptr.dev/)** — for HTML-to-PDF resume conversion
+- **[Claude in Chrome](https://chromewebstore.google.com/detail/claude-in-chrome/)** (optional) — browser extension for LinkedIn scraping and Chrome-based job boards
 - **[WAHA](https://waha.devlike.pro/)** (optional) — self-hosted WhatsApp API for group scanning and notifications
 
 ## Getting Started
 
-### 1. Clone and install
+### 1. Create your repo and install
+
+Click **"Use this template"** on GitHub to create your own copy, then:
 
 ```bash
-git clone https://github.com/roysahar11/ai-job-agent.git
+git clone https://github.com/YOUR_USERNAME/ai-job-agent.git
 cd ai-job-agent
 npm install
 ```
 
-### 2. Configure your profile
+### 2. Set up your profile
 
-Copy the example files and fill in your details:
+Open Claude Code in the project directory and run:
+
+```
+/setup
+```
+
+The agent will guide you through a conversation to build your profile, create your base resume(s), and configure job search parameters. It can import from your existing resume or LinkedIn profile to speed things up.
+
+You can come back to `/setup` anytime to expand or update your profile.
+
+<details>
+<summary>Manual setup (alternative)</summary>
+
+If you prefer to set up manually, copy the example files and fill in your details:
 
 ```bash
-# Profile files
 cp profile/context.example.md profile/context.md
 cp profile/experience.example.md profile/experience.md
 cp profile/preferences.example.md profile/preferences.md
 cp profile/coaching-notes.example.md profile/coaching-notes.md
 cp profile/evaluation-criteria.example.md profile/evaluation-criteria.md
-
-# Config files
+cp profile/resume-preferences.example.md profile/resume-preferences.md
 cp config/user.example.md config/user.md
 cp config/search.example.md config/search.md
 ```
 
-Edit each file following the placeholder instructions inside. The system reads these files to understand your background, skills, and job search preferences.
+Edit each file following the placeholder instructions inside. Then create your base resume JSON in `Resumes/` (see `Resumes/README.md` for the schema).
 
-### 3. Create base resumes
+</details>
 
-Create your base resume JSON files in `Resumes/`. See `Resumes/README.md` for the JSON schema. You'll need at least one base resume (e.g., `Resumes/base-primary.json`).
+### 3. Start using it
 
-### 4. Start using it
-
-Open Claude Code in the project directory and start with:
+Run the full job search pipeline:
 
 ```
 /daily-job-fetch
 ```
 
-This runs the full pipeline: fetching jobs → filtering → scanning relevance → generating a report → drafting applications.
+This fetches jobs from all configured sources, filters by relevance, generates a report, and drafts applications for matching jobs.
 
 For individual operations:
 - `/customize-resume` — tailor a resume for a specific job
@@ -134,25 +156,28 @@ ai-job-agent/
 │   ├── agents/           # Agent definitions (specialized workers)
 │   ├── skills/           # Skill definitions (workflow instructions)
 │   └── settings.json     # Permission rules
-├── config/
-│   ├── user.md           # Your contact info (from user.example.md)
-│   └── search.md         # Search parameters (from search.example.md)
-├── profile/
-│   ├── context.md        # Your background story (from context.example.md)
-│   ├── experience.md     # Skills and experience (from experience.example.md)
-│   ├── preferences.md    # Job preferences (from preferences.example.md)
-│   ├── coaching-notes.md # Interview lessons (from coaching-notes.example.md)
-│   └── evaluation-criteria.md  # Job relevance rules
+├── config/               # Personal config (created by /setup)
+│   ├── user.md           # Your contact info and identity
+│   └── search.md         # LinkedIn keywords, locations, WhatsApp groups, scraper params
+├── profile/              # Personal profile (created by /setup)
+│   ├── context.md        # Your story, career goals, positioning (loaded every session)
+│   ├── experience.md     # Skills, work history, projects (source of truth for resumes)
+│   ├── preferences.md    # Location, salary, ethical boundaries, dream industries
+│   ├── evaluation-criteria.md  # Job relevance rules for scan-jobs
+│   ├── resume-preferences.md   # Personal resume customization rules
+│   └── coaching-notes.md       # Interview lessons (grows over time)
 ├── scripts/
 │   ├── merge-pipeline.js         # Merge + dedup job data
 │   ├── create-quick-apply-batches.js  # Batch job creator
 │   └── scrapers/                 # Web scraper modules
-├── Resumes/              # Base resume JSON files
+├── Resumes/              # Base resume JSON files (created by /setup)
 ├── Applications/         # Per-job application directories (auto-created)
 ├── CLAUDE.md             # Project instructions for Claude Code
 ├── COMPLIANCE.md         # Terms of service notes
 └── package.json
 ```
+
+Each `config/` and `profile/` file has an `.example` template showing the expected structure. `/setup` populates them through conversation, or you can copy and edit them manually.
 
 ## How the Pipeline Works
 
@@ -165,29 +190,15 @@ ai-job-agent/
 7. **Quick-apply** — `quick-apply-batch` agents create draft resumes for relevant jobs in parallel
 8. **Notify** — sends WhatsApp summaries with draft PDFs for review
 
-## Configuration
+## Roadmap
 
-### `config/user.md`
-Your identity — name, email, phone, LinkedIn/GitHub links, work authorization details.
+- **`/update` skill** — Pull updates from the template repo into your fork without overwriting personal files. Will handle merging new skills, agent improvements, and script updates while preserving your `profile/`, `config/`, and `Resumes/` data.
 
-### `config/search.md`
-Search parameters — LinkedIn keywords and locations, Chrome source URLs, WhatsApp group IDs, scraper categories, schedule, and filtering thresholds.
+## Compliance & Disclaimer
 
-### `profile/context.md`
-Your professional narrative — loaded every session. Includes your story, skills summary, career goals, and positioning.
+This project includes scrapers for sources that permit programmatic access, and natural language instructions that direct Claude Code to browse other job platforms via browser automation (Claude in Chrome extension). Some of these platforms may restrict automated access in their Terms of Service. **The browser automation instructions are published for educational and personal use purposes.** By using this project, you accept full responsibility for ensuring your use complies with all applicable laws and platform Terms of Service.
 
-### `profile/experience.md`
-Detailed skills with proficiency levels, project descriptions, and work history. The source of truth for resume generation.
-
-### `profile/preferences.md`
-Location, salary, work setup preferences, ethical boundaries, and dream industries.
-
-### `profile/evaluation-criteria.md`
-Rules for how `scan-jobs` evaluates job relevance — experience flexibility, degree requirements, international assessment criteria.
-
-## Compliance
-
-See [COMPLIANCE.md](COMPLIANCE.md) for notes on terms of service compliance. Some sources (LinkedIn, AllJobs) are accessed via Chrome browser automation — review the compliance notes before use.
+See [COMPLIANCE.md](COMPLIANCE.md) for details on source categories, respectful access principles, and guidance on adding new sources.
 
 ## License
 
