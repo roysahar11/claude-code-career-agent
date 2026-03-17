@@ -1,14 +1,18 @@
 # Claude Code Career Agent
 
-An AI career agent that lives in your terminal. Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code), it combines deep knowledge of your professional background with a modular set of tools to help you find, evaluate, and apply to jobs — or just think through your next career move.
+Your job search, managed by an AI agent that actually knows you.
 
-You build a profile through conversation. The agent learns your experience, skills, preferences, and goals. From there, every capability it has is grounded in who you actually are — not keyword matching, not generic templates.
+Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code), this is a set of skills, agents, and tools that turn Claude into your career partner. It builds a deep profile of your experience, skills, and goals through conversation — then uses that context across everything it does: evaluating job opportunities against your real background (not keywords), generating tailored resumes that draw from your actual experience, scanning multiple job sources daily, and drafting applications autonomously while you sleep.
+
+It's modular — each capability works on its own. It's extensible — you can customize anything or build new capabilities through conversation. And it's honest — it will tell you when a job isn't a good fit, push back on your assumptions, and call out when you're keeping too many options open.
 
 ## What You Can Do
 
 ### Evaluate Jobs Intelligently
 
-Give the agent a job posting URL (or a batch of them) and it will tell you whether each one is a real fit — based on your actual skills, experience level, career goals, and preferences. It reads the full job description, weighs requirements flexibility, considers visa implications, and flags things worth discussing.
+Give the agent job postings and it evaluates each one against your full profile — skills, experience level, career goals, location preferences, visa implications, and ethical boundaries. It uses a two-pass analysis: first judging relevance (is this worth your time?), then scoring your existing resumes against the role to recommend which one to start from.
+
+This isn't keyword matching. The agent reads your `evaluation-criteria.md` — rules you define about how flexible to be on experience requirements, when a "stretch" role is still worth pursuing, how to assess international opportunities and visa pathways, and what "foot in the door" opportunities look like. It classifies jobs as Relevant, Discuss (worth a conversation), or Skip — and always errs on the side of Discuss over Skip, because the cost of missing a good opportunity is higher than reviewing an extra posting.
 
 ```
 Here, check this out: https://example.com/jobs/senior-devops-engineer
@@ -20,21 +24,21 @@ https://...
 https://...
 ```
 
-This is the `/scan-jobs` skill — usable standalone anytime, and also the core of the automated pipeline.
-
 ### Build and Customize Resumes
 
-The agent maintains your base resume(s) as structured data and generates tailored versions for specific roles. It knows which of your experiences to emphasize, how to frame your skills for the role, and renders a polished PDF.
+The agent maintains your base resumes as structured JSON and generates tailored versions for specific roles. It draws exclusively from your documented experience — every claim is traceable to your profile, and your profile explicitly marks what each experience IS and IS NOT to prevent inflation.
+
+For each role, it reorders sections by relevance, highlights keywords from the job posting, adjusts your summary, and adds or removes content to keep it to one page. The rendering pipeline auto-optimizes layout — adjusting font sizes and column widths to fill the page without overflow — and produces a polished PDF.
+
+You iterate through conversation: adjust emphasis, reword bullets, change what's highlighted, until it's right.
 
 ```
 /customize-resume
 ```
 
-You can iterate on the draft through conversation — adjust emphasis, reword bullets, change what's highlighted — until it's right.
-
 ### Apply to Jobs in Bulk
 
-Found 10 relevant jobs? The agent can process them all autonomously — customizing a resume for each, generating PDFs, and sending the drafts to your WhatsApp for review. You wake up to a set of ready-to-submit applications.
+The agent processes multiple jobs autonomously — selecting the best base resume for each, customizing content, generating PDFs, and sending each draft to your WhatsApp with the job link and match score for review. It iterates on its own work (v1, v2, v3) to meet quality standards before sending.
 
 ```
 /quick-apply
@@ -42,30 +46,26 @@ Found 10 relevant jobs? The agent can process them all autonomously — customiz
 
 ### Fetch Jobs from Multiple Sources
 
-The agent can pull job listings from LinkedIn (via browser automation), WhatsApp groups, RSS feeds, job board APIs, and any Chrome-accessible job site. Sources are modular — use what's relevant, disable what's not, add your own.
+The agent pulls job listings from multiple configurable sources, each with its own fetching strategy:
 
-Built-in sources:
+| Source | Method | What It Covers |
+|--------|--------|----------------|
+| LinkedIn | Browser automation via [Claude in Chrome](https://chromewebstore.google.com/detail/claude-in-chrome/) | Keyword + location searches with experience-level filtering, sorted by relevance with intelligent pagination stopping |
+| WhatsApp groups | Optional [WhatsApp skill](https://github.com/roysahar11/claude-code-whatsapp) | Reads job group history, parses text posts, downloads and extracts PDFs/DOCX attachments, vision-parses job flyers |
+| Chrome job boards | Browser automation | AllJobs, Built In Israel, Wellfound — navigates and extracts listings |
+| [Secret Tel Aviv Jobs](https://jobs.secrettelaviv.com/) | RSS feed | Israeli tech startup ecosystem |
+| [Arbeitnow](https://www.arbeitnow.com/) | REST API | European tech jobs, DACH focus, with remote-friendly positions |
+| [SimplifyJobs](https://github.com/SimplifyJobs/New-Grad-Positions) | GitHub raw JSON | US new-grad and entry-level tech, crowdsourced |
 
-| Source | Method | Coverage |
-|--------|--------|----------|
-| LinkedIn | Chrome automation | Any keyword/location search you configure |
-| WhatsApp groups | Optional [WhatsApp skill](https://github.com/roysahar11/claude-code-whatsapp) | Tech job groups you're in |
-| [Secret Tel Aviv Jobs](https://jobs.secrettelaviv.com/) | RSS | Israeli tech startup ecosystem |
-| [Arbeitnow](https://www.arbeitnow.com/) | REST API | European tech, DACH focus |
-| [SimplifyJobs](https://github.com/SimplifyJobs/New-Grad-Positions) | GitHub JSON | US new-grad and entry-level |
+Sources are modular — enable or disable any of them, configure keywords and locations, or add your own.
 
 ### Run the Full Daily Pipeline
 
-Connect all of the above into an automated end-to-end flow: fetch from all sources, merge and deduplicate, evaluate relevance, generate a report, draft applications, and notify you.
+Connect all capabilities into an automated end-to-end flow:
 
 ```
 /daily-job-fetch
 ```
-
-This is where the individual capabilities come together. The pipeline is configurable — you choose which sources to enable, how aggressively to filter, and whether to auto-draft applications or just report.
-
-<details>
-<summary>Pipeline architecture</summary>
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -81,52 +81,43 @@ This is where the individual capabilities come together. The pipeline is configu
               (normalize + dedup)
                      │
            job-description-fetcher
-           (WebFetch + Chrome fallback)
+           (fetch + validate + language detect)
                      │
                 scan-jobs
-           (relevance analysis)
+           (two-pass relevance analysis)
                      │
           ┌──────────┴──────────┐
           │   quick-apply       │
           │  (batch resume      │
-          │   drafting)         │
+          │   customization)    │
           └─────────────────────┘
 ```
 
-**Steps:**
+The pipeline fetches from all configured sources, merges and deduplicates (location-aware, URL-normalized), fetches full job descriptions with content validation and language detection, filters out high-applicant postings, evaluates every remaining job against your profile, generates a report, drafts tailored resumes for relevant matches, and sends everything to your WhatsApp for review.
 
-1. **Fetch** — Collect jobs from LinkedIn (via Chrome), WhatsApp groups (if configured), and web scrapers
-2. **Merge** — Normalize all jobs to a standard schema, derive location cities, deduplicate
-3. **Pre-filter** — Review titles and remove obviously irrelevant postings
-4. **Fetch descriptions** — Retrieve full job descriptions (WebFetch first, Chrome fallback)
-5. **Scan** — Evaluate each job against your profile, skills, and preferences
-6. **Report** — Generate a structured report: relevant, worth discussing, and skip categories
-7. **Quick-apply** — Draft tailored resumes for relevant jobs in parallel
-8. **Notify** — Send WhatsApp summaries with draft PDFs for review (if configured)
-
-</details>
+It runs manually when you invoke it, or you can schedule it to run autonomously (see [Scheduling](#scheduling-optional)).
 
 ### Beyond the Built-In Tools
 
-The agent has your full professional context — your story, skills, experience, goals, strengths, and lessons learned. That makes it useful for things that aren't explicitly programmed:
+The agent holds your full professional context — your career story, detailed skills inventory, work history, goals, preferences, strengths, and lessons learned from past interviews. That makes it useful for things that aren't explicitly programmed:
 
 - **Career strategy** — "What types of roles should I be targeting?" / "Is this career pivot realistic?"
-- **Interview preparation** — "Help me prepare for a system design interview at this company" / "What questions should I expect for this role?"
-- **Professional writing** — Cover letters, LinkedIn messages to recruiters, follow-up emails
+- **Interview preparation** — It knows your story, what gets positive reactions, and where you tend to struggle. It has your coaching notes.
+- **Professional writing** — Cover letters, LinkedIn messages to recruiters, follow-up emails — all grounded in your actual experience
 - **Self-assessment** — "What are my strongest selling points for DevOps roles?" / "Where are my gaps?"
 
-It's Claude Code — it's a conversation. Ask it anything about your career and it'll use everything it knows about you to help.
+It's Claude Code — it's a conversation. Ask anything about your career and it uses everything it knows about you to help.
 
 ## Make It Yours
 
-This repo is a starting point, not a finished product. It's built as a set of **instructions** (skills, agents, profile data) on top of Claude Code — which means you can extend it in any direction through conversation:
+This repo is a starting point. It's built as a set of **instructions** (skills, agents, profile data) on top of Claude Code — which means you can extend it in any direction:
 
-- Add new job sources — write a scraper, point the agent at a new site
-- Create new skills — a networking outreach workflow, a salary negotiation prep skill, anything
-- Customize existing tools — change how resumes are formatted, adjust evaluation criteria, modify the pipeline
-- Build entirely new capabilities — the agent has your context and Claude Code's full toolset
+- **Add job sources** — write a scraper, point the agent at a new site, connect a new API
+- **Create new skills** — a networking outreach workflow, a salary negotiation prep, an interview simulator
+- **Customize existing tools** — change how resumes are formatted, adjust evaluation criteria, modify the pipeline
+- **Build entirely new capabilities** — the agent has your context and Claude Code's full toolset
 
-The skills and agents in this repo are markdown files with instructions. You can read them, modify them, or ask Claude Code to create new ones. There's no framework to learn — just describe what you want.
+Skills and agents are markdown files with instructions. There's no framework to learn — describe what you want and Claude Code builds it.
 
 ## Getting Started
 
@@ -135,8 +126,8 @@ The skills and agents in this repo are markdown files with instructions. You can
 - **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** — the AI coding assistant that powers everything
 - **Node.js** (v18+) — for scripts and resume rendering
 - **[Puppeteer](https://pptr.dev/)** — for HTML-to-PDF resume conversion
-- **[Claude in Chrome](https://chromewebstore.google.com/detail/claude-in-chrome/)** (optional) — browser extension for LinkedIn and Chrome-based job boards
-- **WhatsApp skill** (optional) — for scanning job groups and receiving notifications. See [claude-code-whatsapp](https://github.com/roysahar11/claude-code-whatsapp) for a WAHA-based implementation
+- **[Claude in Chrome](https://chromewebstore.google.com/detail/claude-in-chrome/)** (optional) — for LinkedIn and Chrome-based job boards
+- **WhatsApp skill** (optional) — for scanning job groups and receiving notifications. See [claude-code-whatsapp](https://github.com/roysahar11/claude-code-whatsapp)
 
 ### 1. Create your repo and install
 
@@ -156,14 +147,14 @@ Open Claude Code in the project directory and run:
 /setup
 ```
 
-The agent will guide you through a conversation to build your profile, create your base resume(s), and configure job search parameters. It can import from your existing resume or LinkedIn profile to speed things up.
+The agent guides you through a conversation to build your professional profile — your experience, skills, career goals, preferences, and ethical boundaries. It can import from your existing resume or LinkedIn profile. From there it creates your base resume(s), drafts evaluation criteria for job scanning, and configures your search parameters.
 
 You can come back to `/setup` anytime to expand or update your profile.
 
 <details>
 <summary>Manual setup (alternative)</summary>
 
-If you prefer to set up manually, copy the example files and fill in your details:
+Copy the example files and fill in your details:
 
 ```bash
 cp profile/context.example.md profile/context.md
@@ -182,11 +173,11 @@ Edit each file following the placeholder instructions inside. Then create your b
 
 ### 3. Start using it
 
-You can use any capability independently:
+Each capability works independently:
 
 ```
+/scan-jobs           — evaluate job postings against your profile
 /customize-resume    — tailor a resume for a specific job
-/scan-jobs           — evaluate job postings for relevance
 /quick-apply         — draft applications for multiple jobs
 /daily-job-fetch     — run the full pipeline end-to-end
 ```
@@ -195,7 +186,7 @@ Or just talk to it — paste a job URL, ask for career advice, discuss your resu
 
 ### Scheduling (optional)
 
-To automate `/daily-job-fetch` on a schedule, create a scheduled job that launches Claude Code:
+To run `/daily-job-fetch` on a schedule, create a scheduled job that launches Claude Code:
 
 ```bash
 claude \
@@ -212,59 +203,59 @@ The system is a set of **skills** (workflow instructions), **agents** (specializ
 
 ### Skills
 
-| Skill | What it does |
+| Skill | What It Does |
 |-------|-------------|
-| `/setup` | Guided onboarding — builds your profile, resumes, and config through conversation |
-| `/daily-job-fetch` | Orchestrates the full pipeline: fetch → merge → scan → report → apply |
-| `/customize-resume` | Creates tailored resumes for specific job postings |
-| `/quick-apply` | Autonomous batch application drafting with WhatsApp notifications |
-| `/scan-jobs` | Evaluates job relevance against your profile and preferences |
-| `/linkedin-job-fetch` | Extracts job listings from LinkedIn via Chrome automation |
-| `/personal-note` | Writes cover letters and personal notes for applications |
+| `/setup` | Builds your professional profile, base resumes, evaluation criteria, and search config through guided conversation |
+| `/daily-job-fetch` | Orchestrates the full pipeline — spawns agents for fetching, description retrieval, relevance scanning, and batch resume drafting |
+| `/customize-resume` | Tailors a resume for a specific role: selects base, customizes content from your profile, highlights job-relevant keywords, auto-optimizes layout, renders PDF |
+| `/quick-apply` | Processes jobs autonomously — customizes resumes, self-reviews each draft, sends PDFs to WhatsApp with job links and match scores |
+| `/scan-jobs` | Two-pass job evaluation: relevance judgment against your profile, then resume scoring across all your base resumes |
+| `/linkedin-job-fetch` | Searches LinkedIn by keyword/location, handles DOM virtualization with native scrolling, persists data across page navigations, saves results to JSON |
+| `/personal-note` | Writes cover letters grounded in your documented experience — maps your skills to job requirements, includes genuine personal connection only when documented |
 
 ### Agents
 
 | Agent | Role |
 |-------|------|
-| `job-fetcher` | Fetches jobs from LinkedIn, WhatsApp, and Chrome sources |
-| `job-description-fetcher` | Retrieves full job descriptions with WebFetch + Chrome fallback |
-| `scan-jobs` | Analyzes job postings for relevance |
-| `quick-apply-batch` | Processes batches of applications autonomously |
+| `job-fetcher` | Collects jobs from LinkedIn, WhatsApp (including image/PDF parsing), and Chrome-based job boards into standardized JSON |
+| `job-description-fetcher` | Retrieves full descriptions with content validation (title/company match), language detection, and applicant count extraction. Two-tier: WebFetch first, Chrome fallback |
+| `scan-jobs` | Reads your full profile, evaluates each job in two passes (relevance → resume scoring), outputs verdicts with reasoning |
+| `quick-apply-batch` | Creates draft resumes for a batch of pre-screened jobs, iterating on quality (v1→v2→v3), with per-job WhatsApp delivery |
 
 ### Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `merge-pipeline.js` | Merges jobs from all sources, normalizes, deduplicates |
-| `create-quick-apply-batches.js` | Splits relevant jobs into batches for parallel processing |
-| `filter-by-urls.js` | Marks pipeline entries as filtered by matching URLs |
-| `scrapers/fetch-all.js` | Runs web scrapers (individually configurable) |
+| Script | What It Does |
+|--------|-------------|
+| `merge-pipeline.js` | Merges jobs from all sources into master pipeline JSONs. Location-aware deduplication, URL normalization, city extraction |
+| `create-quick-apply-batches.js` | Groups multi-location postings, splits jobs into batches with full context (verdict, reasoning, best resume, description) |
+| `filter-by-urls.js` | Pre-filters pipeline entries by URL match — used for title-based filtering before LLM evaluation |
+| `scrapers/fetch-all.js` | Runs web scrapers in parallel with per-scraper error isolation. Tracks last-fetch timestamps to avoid re-processing |
 
 ## File Structure
 
 ```
 claude-code-career-agent/
 ├── .claude/
-│   ├── agents/           # Agent definitions (specialized workers)
-│   ├── skills/           # Skill definitions (workflow instructions)
+│   ├── agents/           # Specialized worker definitions
+│   ├── skills/           # Workflow instruction sets
 │   └── settings.json     # Permission rules
-├── config/               # Personal config (created by /setup)
-│   ├── user.md           # Your contact info and identity
-│   └── search.md         # Keywords, locations, sources, scraper params
-├── profile/              # Your professional profile (created by /setup)
-│   ├── context.md        # Your story, career goals, positioning
-│   ├── experience.md     # Skills, work history, projects
+├── config/
+│   ├── user.md           # Contact info, links, citizenships
+│   └── search.md         # Keywords, locations, sources, filtering thresholds
+├── profile/
+│   ├── context.md        # Your story, goals, positioning (loaded every session)
+│   ├── experience.md     # Full skills inventory, work history, projects — with explicit scope markers
 │   ├── preferences.md    # Location, salary, boundaries, dream industries
-│   ├── evaluation-criteria.md  # Rules for how scan-jobs evaluates relevance
-│   ├── resume-preferences.md   # Resume customization rules
-│   └── coaching-notes.md       # Interview lessons (grows over time)
+│   ├── evaluation-criteria.md  # Rules for job relevance: experience flexibility, visa assessment, "foot in door" logic
+│   ├── resume-preferences.md   # Personal resume rules: always-highlight skills, regional sections, transferable skills framing
+│   └── coaching-notes.md       # Interview strengths, lessons learned, behavioral patterns to watch
 ├── scripts/
 │   ├── merge-pipeline.js
 │   ├── create-quick-apply-batches.js
-│   └── scrapers/                 # Web scraper modules
-├── templates/            # Report templates
-├── Resumes/              # Base resume JSON files (created by /setup)
-├── Applications/         # Per-job application directories (auto-created)
+│   └── scrapers/
+├── templates/            # Report templates (daily summary, WhatsApp digest)
+├── Resumes/              # Base resume JSONs (created by /setup)
+├── Applications/         # Per-job directories with drafts, finals, and status tracking
 ├── CLAUDE.md             # Project instructions for Claude Code
 ├── COMPLIANCE.md         # Terms of service notes
 └── package.json
