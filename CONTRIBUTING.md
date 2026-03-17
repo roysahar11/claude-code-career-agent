@@ -28,14 +28,38 @@ Better examples, clearer setup instructions, usage guides, translations.
 
 ## How to Contribute
 
-1. **Fork** the repo and create a branch for your change
-2. **Make your changes** — keep them focused on one thing
-3. **Test locally** — make sure your change works with the existing pipeline
-4. **Open a PR** with a clear description of what you're adding and why
+### Simple path (small changes)
+
+For a new scraper, a single skill, or a bug fix:
+
+1. **Fork** this repo on GitHub
+2. **Clone your fork** and create a branch for your change
+3. **Make your changes** directly in the fork
+4. **Check for PII** — make sure you haven't included any personal data (names, emails, phone numbers, company names from your history)
+5. **Open a PR** with a clear description of what you're adding and why
+
+### Using `/publish` (larger changes, or syncing from your private repo)
+
+If you've been building in your private repo (created from this template) and want to contribute improvements back, the `/publish` skill can help. It syncs product files from your private repo to a target repo while automatically stripping personal data.
+
+1. **Fork** this repo on GitHub and clone the fork locally
+2. **Configure** — create `config/publish.md` in your private repo:
+   ```markdown
+   # Publish Configuration
+
+   - **Public repo path**: /path/to/your/fork/of/claude-code-career-agent
+   - **Remote**: origin
+   - **Branch**: main
+   ```
+3. **Run** `/publish` from your private repo — it reads your files, sanitizes PII, generates clean templates, and writes everything to the fork
+4. **Review** the diff — the skill shows you what changed and asks for confirmation before committing
+5. **Open a PR** from your fork to this repo
+
+The publish skill classifies files automatically: workflow logic gets sanitized and copied, personal profile data becomes `.example.md` templates, and operational files (applications, state, logs) are ignored entirely. It also runs PII checks before committing, using patterns from your `config/user.md`.
 
 ## Guidelines
 
-- **No personal data** — Double-check that your contribution doesn't include names, contact info, API keys, or anything from your `profile/`, `config/`, or `Applications/` directories. These are all gitignored, but be careful with copy-paste.
+- **No personal data** — Double-check that your contribution doesn't include names, contact info, API keys, or anything from your `profile/`, `config/`, or `Applications/` directories. These are all gitignored, but be careful with copy-paste. The `/publish` skill handles this automatically if you use it.
 - **Keep it modular** — New scrapers, skills, and agents should work independently. Don't create dependencies between unrelated components.
 - **Match existing patterns** — Look at how existing scrapers, skills, and agents are structured and follow the same conventions.
 - **Standard job schema** — Scrapers must output jobs using `makeJob()` from `scripts/scrapers/lib/types.js`. This keeps the merge pipeline working.

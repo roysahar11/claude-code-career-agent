@@ -214,6 +214,7 @@ The system is a set of **skills** (workflow instructions), **agents** (specializ
 | `/scan-jobs` | Two-pass job evaluation: relevance judgment against your profile, then resume scoring across all your base resumes |
 | `/linkedin-job-fetch` | Searches LinkedIn by keyword/location, handles DOM virtualization with native scrolling, persists data across page navigations, saves results to JSON |
 | `/personal-note` | Writes cover letters grounded in your documented experience — maps your skills to job requirements, includes genuine personal connection only when documented |
+| `/publish` | Syncs improvements from your private repo to a public repo (fork or your own), stripping PII and generating clean templates. Useful for [contributing back](CONTRIBUTING.md) |
 
 ### Agents
 
