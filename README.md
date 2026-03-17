@@ -119,6 +119,8 @@ This repo is a starting point. It's built as a set of **instructions** (skills, 
 
 Skills and agents are markdown files with instructions. There's no framework to learn — describe what you want and Claude Code builds it.
 
+**Built something useful? Share it back.** If you create a new scraper, skill, or workflow that others could benefit from, consider contributing it to this repo. The more people build on this, the more powerful it becomes for everyone. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get involved.
+
 ## Getting Started
 
 ### Prerequisites
