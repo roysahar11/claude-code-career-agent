@@ -384,7 +384,7 @@ async function main() {
         console.log(`   Column heights: sidebar=${measurements.sidebarHeight}px, main=${measurements.mainHeight}px (diff: ${measurements.columnDiff}px)`);
 
         // Optimize if there's space remaining OR significant column imbalance
-        const needsOptimization = parseFloat(spacePercent) > 3 || measurements.columnDiff > 50;
+        const needsOptimization = parseFloat(spacePercent) > 3 || measurements.columnDiff >= 40;
 
         if (shouldFix && needsOptimization) {
             console.log(`\nOptimizing layout...`);

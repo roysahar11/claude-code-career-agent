@@ -101,9 +101,10 @@ function generateResumeHtml(dataPath, outputPath) {
     `).join('\n');
 
     // Generate hobbies section HTML (only if hobbies provided)
+    const hobbiesTitle = data.hobbiesTitle || 'Other Expertise / Hobbies';
     const hobbiesSectionHtml = data.hobbies ? `
                 <section>
-                    <h2 class="sidebar-title">Other Expertise / Hobbies</h2>
+                    <h2 class="sidebar-title">${hobbiesTitle}</h2>
                     <p class="hobbies">${data.hobbies}</p>
                 </section>` : '';
 

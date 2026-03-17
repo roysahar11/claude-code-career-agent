@@ -86,8 +86,8 @@ If `status.md` already exists (e.g., from a previous run), don't overwrite it.
 Use the `/whatsapp` skill to send the user a message with:
 - Role title & Company name
 - Link to job posting
-- Which base resume was used
-- The draft PDF attached
+- Which base resume was used (and match score, if available from scan-jobs metadata)
+- Both the draft PDF and the base resume PDF attached
 
 **Scope boundaries:**
 - Everything stays in `drafts/` — only the user can finalize to `final/`

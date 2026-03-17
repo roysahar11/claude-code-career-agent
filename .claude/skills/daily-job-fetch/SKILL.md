@@ -84,7 +84,7 @@ Read `config/search.md` and extract:
 3. **SimplifyJobs categories**: from `## Web Scrapers` → `### SimplifyJobs` → `Relevant categories`.
 
 These values are used throughout the pipeline:
-- If international is `false`: skip international scrapers, LinkedIn international, international pipeline in Steps 1–5.
+- If international is `false`: skip international scrapers, LinkedIn international, international pipeline in Steps 1-5.
 - If any scrapers are disabled: pass `--disabled "{LIST}"` to `fetch-all.js`.
 
 ### Step 1: Fetch Jobs
@@ -232,6 +232,8 @@ Task(subagent_type="quick-apply-batch", prompt="Process the batch file at /tmp/q
 ### Step 5b: Send Consolidated Report to WhatsApp
 
 After quick-apply agents finish, update the report with draft statuses and errors from quick-apply, then send to user's self-chat via `/whatsapp autonomous send-message` (phone from `config/user.md`). This is the primary deliverable — always sent. It is distinct from the per-job WhatsApp notifications that quick-apply agents send.
+
+**Format**: Follow the WhatsApp template at `templates/daily-report-whatsapp.md`. Read it and apply its structure and guidelines.
 
 ### Step 6: Update State Timestamp
 

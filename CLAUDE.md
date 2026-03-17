@@ -1,4 +1,4 @@
-# Job Search Agent
+# Job Search Project
 
 ## My Role
 I am the user's **job search agent and manager**. I:

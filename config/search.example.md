@@ -2,12 +2,11 @@
 
 ## Scope
 
-Controls which pipelines run during `/daily-job-fetch`:
-- **International**: true | false — set to `false` to skip all international sources (LinkedIn Intl, international scrapers)
+- **International**: <!-- true or false — set to false to skip all international sources (LinkedIn International, international scrapers) -->
 
 ## Scrapers
 
-Enable or disable individual web scrapers. Disabled scrapers are skipped by `fetch-all.js`.
+<!-- Enable or disable individual web scrapers. Disabled scrapers are skipped by fetch-all.js. -->
 
 | Scraper | Scope | Enabled | Description |
 |---------|-------|---------|-------------|
@@ -17,54 +16,52 @@ Enable or disable individual web scrapers. Disabled scrapers are skipped by `fet
 
 ## LinkedIn Searches
 
-### Primary Location
-- **geoId**: [Your location's LinkedIn geoId — find it in the URL when searching LinkedIn Jobs for your area]
-- **Keywords**: [Job titles to search, e.g., DevOps Engineer, Full Stack Developer, Junior Software Engineer]
-- **Experience levels**: 1,2
+<!-- Configure one or more LinkedIn search profiles. Each needs a geographic target and keywords.
+To find your geoId: search LinkedIn Jobs for your target location, then extract the geoId parameter from the URL.
+Experience levels: 1=Internship, 2=Entry level, 3=Associate, 4=Mid-Senior level, 5=Director, 6=Executive -->
+
+### Israel
+- **geoId**: 101620260
+- **Keywords**: <!-- Comma-separated role keywords — e.g., DevOps Engineer, Full Stack Developer, Junior Software Developer, Junior Software Engineer -->
+- **Experience levels**: <!-- e.g., 1,2 for internship + entry level -->
 
 ### International
-- **Locations**: [Regions to search, e.g., European Union, Germany, Remote]
-- **Keywords**: [Same or different keywords for international search]
-- **Experience levels**: 1,2
+<!-- Optional second search profile for international roles. Remove this section if not searching internationally. -->
+- **Locations**: <!-- Comma-separated — e.g., European Union, Germany, Netherlands, Remote -->
+- **Keywords**: <!-- e.g., DevOps Engineer, Full Stack Developer, Junior Software Developer -->
+- **Experience levels**: <!-- e.g., 1,2 -->
 
 ## Chrome Sources (manual-mode only)
 
-<!-- Add job board URLs you want the agent to browse via Chrome automation.
-Each source needs: base URL, search keywords, and any position codes. -->
+<!-- Job boards that require browser automation (no public API). Add, remove, or modify based on your target market. -->
 
 ### AllJobs
-- **URL template**: [URL with position code placeholders]
-- **Position codes**: [Site-specific codes for your target roles]
-- **Keywords**: [Search terms]
+- **URL template**: https://www.alljobs.co.il/SearchResultVer2.aspx?page=1&position={POSITION_CODES}&type=&source=hp_sb
+- **Position codes**: <!-- Site-specific category codes — e.g., 11577 (DevOps), 11571 (Full Stack) -->
+- **Keywords**: <!-- e.g., DevOps, Full Stack, Junior Developer -->
 
 ### Built In Israel
-- **URL base**: [https://builtin.com/jobs/mena/israel or your region's Built In URL]
-- **Keywords**: [Search terms]
+- **URL base**: https://builtin.com/jobs/mena/israel
+- **Keywords**: <!-- e.g., devops, full stack, developer, engineer -->
 
 ### Wellfound
-- **URL base**: [https://wellfound.com/location/your-location]
-- **Keywords**: [Search terms]
+- **URL base**: https://wellfound.com/location/israel
+- **Keywords**: <!-- e.g., DevOps, Full Stack, Developer -->
 
 ## Web Scrapers
 
 ### SimplifyJobs
-- **Relevant categories**: [e.g., Software, AI/ML/Data — see SimplifyJobs GitHub for available categories]
+- **Relevant categories**: <!-- e.g., Software, AI/ML/Data — see the SimplifyJobs GitHub repo for available categories -->
 
 ## WhatsApp Groups
 
-<!-- Add WhatsApp groups where job postings are shared.
-Get group IDs from WAHA API or WhatsApp Web. -->
+<!-- List WhatsApp groups where job postings are shared. Get group IDs from WAHA API.
+To find group IDs, use the WhatsApp skill to list your groups. -->
 
 | Name | Group ID |
 |------|----------|
-| [Group Name] | [group-id@g.us] |
-
-To find group IDs, use the WhatsApp skill to list your groups.
-
-## Schedule
-- **Fetch triggers**: [e.g., 08:00, 14:00, 20:00]
-- **Short day** (day number, 1=Mon): [e.g., 5 for Friday]
-- **Day off** (day number): [e.g., 6 for Saturday]
+| <!-- Group name --> | <!-- group-id@g.us --> |
+| <!-- Group name --> | <!-- group-id@g.us --> |
 
 ## Filtering
-- **Max applicants**: [e.g., 30 — skip LinkedIn jobs with more applicants than this]
+- **Max applicants**: <!-- Maximum LinkedIn applicant count before skipping a posting — e.g., 30. Lower = more selective, higher = more inclusive. -->

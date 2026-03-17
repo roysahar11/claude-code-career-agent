@@ -223,7 +223,7 @@ Include in your response:
 
 **File**: {OUTPUT_FILE_PATH}
 **Search**: {keywords searched} | {location} | {time range} | {experience levels}
-**Found**: {total scraped} → {tech-relevant after filter} tech-relevant ({filtered out} non-tech removed)
+**Found**: {total scraped} -> {tech-relevant after filter} tech-relevant ({filtered out} non-tech removed)
 
 ### Per-Keyword Stats
 - "DevOps Engineer": {N} pages extracted, {M} jobs

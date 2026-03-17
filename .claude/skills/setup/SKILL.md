@@ -115,13 +115,26 @@ Check whether the user has a WhatsApp-capable skill available. Look at the skill
 - Write the `## Integrations` section in `CLAUDE.md`:
   - Single skill: `- **WhatsApp**: When instructed to use WhatsApp, use the /{skill-name} skill.`
   - Separate skills: `- **WhatsApp**: When instructed to use WhatsApp, use these skills:` with sub-bullets for send and read
-- Ask the user about WhatsApp groups for job scanning (configured in `config/search.md`)
+- Ask which phone number should receive notifications (daily reports, draft summaries, alerts). This can be their own number (self-chat) or someone else's. Write it to the `## WhatsApp` section in `config/user.md` as the **Self-chat phone**.
+- Configure WhatsApp groups for job scanning (see below)
 
 **If no capable skill is found:**
 - Explain what WhatsApp enables: scanning job groups for postings + receiving notifications/reports
 - Suggest installing the [WhatsApp skill](https://github.com/roysahar11/claude-code-whatsapp) which uses WAHA (self-hosted WhatsApp API)
 - Or skip — the pipeline works without WhatsApp, just no group scanning or push notifications
 - Write: `- **WhatsApp**: not configured. Whenever instructed to use WhatsApp, skip that step.`
+
+#### WhatsApp Groups for Job Scanning
+
+Only if WhatsApp was configured above. Ask the user whether they have WhatsApp groups where job postings or opportunities are shared — these could be tech job boards, community channels, recruiter groups, etc. The daily job fetch pipeline can automatically scan these groups for new postings.
+
+**If the user has groups to configure:**
+1. Ask the user to tell you the group names (or paste group IDs directly if they have them)
+2. For group names: use the WhatsApp skill to search for matching groups and resolve their IDs
+3. Confirm the resolved groups with the user
+4. Write the groups (name + group ID) into the `## WhatsApp Groups` table in `config/search.md`
+
+**If the user doesn't have groups or wants to skip:** Leave the WhatsApp Groups section in `config/search.md` empty — they can add groups later via `/setup whatsapp groups`.
 
 ### 7. File Generation
 

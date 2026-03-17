@@ -69,6 +69,7 @@ The system is built as a set of **skills** (workflow instructions) and **agents*
 |--------|---------|
 | `scripts/merge-pipeline.js` | Merges jobs from all sources, normalizes, deduplicates |
 | `scripts/create-quick-apply-batches.js` | Splits relevant jobs into batches for parallel processing |
+| `scripts/filter-by-urls.js` | Marks pipeline entries as filtered by matching URLs from a file |
 | `scripts/scrapers/fetch-all.js` | Runs web scrapers (see table below) |
 
 ### Web Scrapers
@@ -150,6 +151,19 @@ For individual operations:
 - `/scan-jobs` — evaluate a batch of job postings
 - `/quick-apply` — draft applications for multiple jobs
 
+### Scheduling (optional)
+
+By default, `/daily-job-fetch` runs manually when you invoke it. If you want to automate it on a schedule, you can create a scheduled job that launches Claude Code with the right prompt and permissions. For example:
+
+```bash
+claude \
+  --permission-mode dontAsk \
+  --allowedTools "Read,Glob,Grep,Task,WebFetch,WebSearch,Write,Edit,Bash,mcp__claude-in-chrome__*" \
+  "Run /daily-job-fetch and quick-apply to relevant jobs. Work autonomously."
+```
+
+Wrap this in a shell script with any platform-specific setup you need (e.g., `caffeinate` on macOS to prevent sleep, waiting for external drives to mount) and trigger it with `launchd`, `cron`, or any scheduler of your choice.
+
 ## File Structure
 
 ```
@@ -172,6 +186,7 @@ claude-code-career-agent/
 │   ├── merge-pipeline.js         # Merge + dedup job data
 │   ├── create-quick-apply-batches.js  # Batch job creator
 │   └── scrapers/                 # Web scraper modules
+├── templates/            # Report templates (daily fetch summary, WhatsApp digest)
 ├── Resumes/              # Base resume JSON files (created by /setup)
 ├── Applications/         # Per-job application directories (auto-created)
 ├── CLAUDE.md             # Project instructions for Claude Code

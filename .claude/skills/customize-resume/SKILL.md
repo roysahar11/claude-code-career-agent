@@ -100,7 +100,7 @@ When creating resumes without the user's real-time review (quick-apply, batch pr
 - If a skill is NOT in the job requirements, don't highlight it even if the user has it - highlighting signals "this matches what you asked for"
 
 **Adapt language** to match job description terminology:
-- Same meaning, different words (e.g., "container orchestration" ↔ "Kubernetes management")
+- Same meaning, different words (e.g., "container orchestration" <-> "Kubernetes management")
 - Helps with ATS matching
 
 ## Step 4: Customize Summary
@@ -239,3 +239,6 @@ Update to "Applied" once the user confirms submission.
 - LOW: Hobbies, very old experience, skills not relevant to target role
 
 **Avoid orphaned words** - adjust text so paragraphs don't end with a single word on the last line.
+
+**Customizable section titles:**
+- `hobbiesTitle` — overrides the "Other Expertise / Hobbies" sidebar section title. Useful when the section contains non-hobby content (e.g., `"hobbiesTitle": "Other"` for entries like "Youth Movement Counselor"). Defaults to "Other Expertise / Hobbies" if omitted.
