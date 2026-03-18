@@ -7,11 +7,15 @@
 
 Your job search, managed by an AI agent that actually knows you.
 
-Built on [Claude Code](https://docs.anthropic.com/en/docs/claude-code), this is a set of skills, agents, and tools that turn Claude into your career partner. It builds a deep profile of your experience, skills, and goals through conversation — then uses that context across everything it does: evaluating job opportunities against your real background (not keywords), generating tailored resumes that draw from your actual experience, scanning multiple job sources daily, and drafting applications autonomously while you sleep.
+Appliable is a set of skills, agents, and scripts that turn Claude into your personal career partner. It builds a deep profile of your experience, skills, goals, and preferences through conversation — then uses that context across everything it does: scanning multiple job sources (job boards, LinkedIn, WhatsApp groups) and intelligently filtering roles that are actually relevant for you; generating professional ATS-friendly resumes, custom tailored for each role; drafting personal notes for recruiters to make you stand out; sending everything to your WhatsApp for review, and more.
 
-It's modular — each capability works on its own. It's extensible — you can customize anything or build new capabilities through conversation. And it's honest — it will tell you when a job isn't a good fit, push back on your assumptions, and call out when you're keeping too many options open.
+This isn't some automated job search that does keyword-matching and cheap AI resume customization, and leaves you with a pile of manual work. The agent intelligently evaluates job opportunities against your real background, skills, and experience, decides which experience to emphasize on each resume, considers when a "stretch" role is still worth pursuing, and is designed to draw exclusively from your documented experience — no hallucinated qualifications, no inflated claims.
 
-> **Note:** This project was built for junior-level software industry job searches in Israel and Europe, for Hebrew and English speakers. The core system (profile building, resume customization, job evaluation, application drafting) is industry- and level-agnostic — it should work well for other career stages and tech sectors, and may work for other industries and languages, but these haven't been tested yet. Contributions to broaden coverage are very welcome.
+Once set up, one command — `/daily-job-fetch` activates an entire pipeline that delivers relevant jobs from all sources to your WhatsApp, together with customized resumes for each role.
+
+It's also modular — each capability works on its own. It's extensible — you can customize anything or build new capabilities through conversation. And it's honest — it will tell you when a job isn't a good fit, push back on your assumptions, and call out when you're keeping too many options open.
+
+> **Note:** The workflows in this project were originally designed for junior-level software industry job searches in Israel and Europe, for Hebrew and English speakers. They should work well for other career stages and tech sectors, and may work for other industries and languages, but these haven't been tested yet. Contributions to broaden coverage are very welcome.
 
 ## What You Can Do
 
