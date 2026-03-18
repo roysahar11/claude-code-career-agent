@@ -274,6 +274,15 @@ Each `config/` and `profile/` file has an `.example` template showing the expect
 
 This project includes instructions that tell Claude Code to browse certain job platforms using the Claude in Chrome extension. Some platforms may restrict automated access in their Terms of Service. These instructions are published for educational and personal use purposes. By using this project, you accept full responsibility for ensuring your use complies with all applicable laws and platform Terms of Service. See [COMPLIANCE.md](COMPLIANCE.md) for details.
 
+## Credits
+
+This project uses data from:
+
+- **[Arbeitnow](https://www.arbeitnow.com/)** — European tech job listings via their public API.
+- **[SimplifyJobs](https://github.com/SimplifyJobs/New-Grad-Positions)** — US new-grad job listings from their community-maintained GitHub repository.
+- **[Secret Tel Aviv Jobs](https://jobs.secrettelaviv.com/)** — Israeli tech job listings via their public RSS feed.
+- **[rss-parser](https://github.com/rbren/rss-parser)** by Bobby Brennan — MIT-licensed RSS parsing library.
+
 ## License
 
 [MIT](LICENSE)
